@@ -1,0 +1,926 @@
+{
+	"name": "Main",
+	"events": [
+		{
+			"eventType": "include",
+			"includeSheet": "GlobalVariables"
+		},
+		{
+			"eventType": "block",
+			"conditions": [
+				{
+					"id": "on-start-of-layout",
+					"objectClass": "System",
+					"sid": 312390912698622
+				}
+			],
+			"actions": [
+				{
+					"type": "script",
+					"script": "Main.GenerateTrack(runtime, 500);"
+				}
+			],
+			"sid": 401511768968383
+		},
+		{
+			"eventType": "block",
+			"conditions": [
+				{
+					"id": "every-tick",
+					"objectClass": "System",
+					"sid": 972428224868195
+				}
+			],
+			"actions": [
+				{
+					"type": "script",
+					"script": "Main.RenderTrack(runtime);"
+				}
+			],
+			"sid": 195897360988045
+		},
+		{
+			"eventType": "group",
+			"disabled": false,
+			"title": "Movement",
+			"description": "",
+			"isActiveOnStart": true,
+			"children": [
+				{
+					"eventType": "variable",
+					"name": "ACCELERATION",
+					"type": "number",
+					"initialValue": "100",
+					"comment": "",
+					"isStatic": false,
+					"isConstant": true,
+					"sid": 942399312014003
+				},
+				{
+					"eventType": "variable",
+					"name": "MAX_SPEED",
+					"type": "number",
+					"initialValue": "200",
+					"comment": "",
+					"isStatic": false,
+					"isConstant": true,
+					"sid": 275222381330751
+				},
+				{
+					"eventType": "variable",
+					"name": "HORIZONTAL_SPEED",
+					"type": "number",
+					"initialValue": "50",
+					"comment": "",
+					"isStatic": false,
+					"isConstant": true,
+					"sid": 190794791142658
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "key-is-down",
+							"objectClass": "Keyboard",
+							"sid": 230142246784352,
+							"parameters": {
+								"key": 38
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "add-to-instvar",
+							"objectClass": "Sprite",
+							"sid": 346689848615035,
+							"parameters": {
+								"instance-variable": "speed",
+								"value": "ACCELERATION * dt"
+							}
+						}
+					],
+					"sid": 213277263012874
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "else",
+							"objectClass": "System",
+							"sid": 540728444587751
+						}
+					],
+					"actions": [
+						{
+							"id": "subtract-from-instvar",
+							"objectClass": "Sprite",
+							"sid": 668397662168120,
+							"parameters": {
+								"instance-variable": "speed",
+								"value": "ACCELERATION * dt"
+							}
+						}
+					],
+					"sid": 554412582790011
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "every-tick",
+							"objectClass": "System",
+							"sid": 649402505864020
+						}
+					],
+					"actions": [
+						{
+							"id": "set-instvar-value",
+							"objectClass": "Sprite",
+							"sid": 657332987746869,
+							"parameters": {
+								"instance-variable": "speed",
+								"value": "clamp(Sprite.speed, 0, MAX_SPEED)"
+							}
+						},
+						{
+							"type": "script",
+							"script": "Main.camera.z += runtime.objects.Sprite.getFirstInstance().instVars.speed * runtime.dt;\n\nif (Main.camera.z > Main.track.length * runtime.globalVars.SEGMENT_LENGTH) {\n\tMain.camera.z -= Main.track.length * runtime.globalVars.SEGMENT_LENGTH;\n}"
+						}
+					],
+					"sid": 488142813522505
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "compare-instance-variable",
+							"objectClass": "Sprite",
+							"sid": 484225446845426,
+							"parameters": {
+								"instance-variable": "speed",
+								"comparison": 4,
+								"value": "0"
+							}
+						}
+					],
+					"actions": [],
+					"sid": 306236880996733,
+					"children": [
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "key-is-down",
+									"objectClass": "Keyboard",
+									"sid": 446541184452018,
+									"parameters": {
+										"key": 37
+									}
+								}
+							],
+							"actions": [
+								{
+									"type": "script",
+									"script": "Main.camera.x -= localVars.HORIZONTAL_SPEED * runtime.dt;"
+								}
+							],
+							"sid": 688164672257057
+						},
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "key-is-down",
+									"objectClass": "Keyboard",
+									"sid": 345504936813659,
+									"parameters": {
+										"key": 39
+									}
+								}
+							],
+							"actions": [
+								{
+									"type": "script",
+									"script": "Main.camera.x += localVars.HORIZONTAL_SPEED * runtime.dt;"
+								}
+							],
+							"sid": 412635386221482
+						}
+					]
+				}
+			],
+			"sid": 263611975485069
+		},
+		{
+			"eventType": "group",
+			"disabled": false,
+			"title": "Animation",
+			"description": "",
+			"isActiveOnStart": true,
+			"children": [
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "key-is-down",
+							"objectClass": "Keyboard",
+							"sid": 427219531634854,
+							"parameters": {
+								"key": 38
+							},
+							"isInverted": true
+						},
+						{
+							"id": "key-is-down",
+							"objectClass": "Keyboard",
+							"sid": 512239772126478,
+							"parameters": {
+								"key": 37
+							},
+							"isInverted": true
+						},
+						{
+							"id": "key-is-down",
+							"objectClass": "Keyboard",
+							"sid": 625439400474931,
+							"parameters": {
+								"key": 39
+							},
+							"isInverted": true
+						}
+					],
+					"actions": [
+						{
+							"id": "set-animation",
+							"objectClass": "Sprite",
+							"sid": 473966824045551,
+							"parameters": {
+								"animation": "\"Idle\"",
+								"from": "current-frame"
+							}
+						}
+					],
+					"sid": 484450219372236
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "key-is-down",
+							"objectClass": "Keyboard",
+							"sid": 793859569214488,
+							"parameters": {
+								"key": 38
+							}
+						},
+						{
+							"id": "key-is-down",
+							"objectClass": "Keyboard",
+							"sid": 632695350983189,
+							"parameters": {
+								"key": 37
+							},
+							"isInverted": true
+						},
+						{
+							"id": "key-is-down",
+							"objectClass": "Keyboard",
+							"sid": 396550920412633,
+							"parameters": {
+								"key": 39
+							},
+							"isInverted": true
+						}
+					],
+					"actions": [
+						{
+							"id": "set-animation",
+							"objectClass": "Sprite",
+							"sid": 397090453646901,
+							"parameters": {
+								"animation": "\"Straight\"",
+								"from": "current-frame"
+							}
+						}
+					],
+					"sid": 368504168954996
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "key-is-down",
+							"objectClass": "Keyboard",
+							"sid": 940798196053004,
+							"parameters": {
+								"key": 37
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-animation",
+							"objectClass": "Sprite",
+							"sid": 291693448547887,
+							"parameters": {
+								"animation": "\"Left\"",
+								"from": "current-frame"
+							}
+						}
+					],
+					"sid": 734345613452452
+				},
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "key-is-down",
+							"objectClass": "Keyboard",
+							"sid": 553540312592467,
+							"parameters": {
+								"key": 39
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-animation",
+							"objectClass": "Sprite",
+							"sid": 531335219617580,
+							"parameters": {
+								"animation": "\"Right\"",
+								"from": "current-frame"
+							}
+						}
+					],
+					"sid": 935546263954232
+				}
+			],
+			"sid": 763746215399953
+		},
+		{
+			"eventType": "group",
+			"disabled": false,
+			"title": "Functions",
+			"description": "",
+			"isActiveOnStart": true,
+			"children": [
+				{
+					"functionName": "DrawingCanvas.AddPoint",
+					"functionDescription": "",
+					"functionCategory": "",
+					"functionReturnType": "none",
+					"functionIsAsync": false,
+					"functionParameters": [
+						{
+							"name": "x",
+							"type": "number",
+							"initialValue": "0",
+							"comment": "",
+							"sid": 155739016790626
+						},
+						{
+							"name": "y",
+							"type": "number",
+							"initialValue": "0",
+							"comment": "",
+							"sid": 743158067785901
+						}
+					],
+					"eventType": "function-block",
+					"conditions": [],
+					"actions": [
+						{
+							"id": "add-poly-point",
+							"objectClass": "DrawingCanvas",
+							"sid": 928608878627463,
+							"parameters": {
+								"x": "x",
+								"y": "y"
+							}
+						}
+					],
+					"sid": 794521335527899
+				},
+				{
+					"functionName": "DrawingCanvas.FillAndResetPoly",
+					"functionDescription": "",
+					"functionCategory": "",
+					"functionReturnType": "none",
+					"functionIsAsync": false,
+					"functionParameters": [
+						{
+							"name": "color",
+							"type": "number",
+							"initialValue": "0",
+							"comment": "",
+							"sid": 635049484437291
+						}
+					],
+					"eventType": "function-block",
+					"conditions": [],
+					"actions": [
+						{
+							"id": "fill-poly",
+							"objectClass": "DrawingCanvas",
+							"sid": 528247246128589,
+							"parameters": {
+								"color": "color"
+							}
+						},
+						{
+							"id": "reset-poly",
+							"objectClass": "DrawingCanvas",
+							"sid": 460555505460113
+						}
+					],
+					"sid": 917296026810283
+				},
+				{
+					"functionName": "DrawingCanvas.Clear",
+					"functionDescription": "",
+					"functionCategory": "",
+					"functionReturnType": "none",
+					"functionIsAsync": false,
+					"functionParameters": [],
+					"eventType": "function-block",
+					"conditions": [],
+					"actions": [
+						{
+							"id": "clear-canvas",
+							"objectClass": "DrawingCanvas",
+							"sid": 814691841794330,
+							"parameters": {
+								"color": "rgba(0, 0, 0, 0)"
+							}
+						}
+					],
+					"sid": 232381235929012
+				}
+			],
+			"sid": 867321023782483
+		},
+		{
+			"eventType": "group",
+			"disabled": false,
+			"title": "Debug",
+			"description": "",
+			"isActiveOnStart": true,
+			"children": [
+				{
+					"eventType": "block",
+					"conditions": [
+						{
+							"id": "pick-by-unique-id",
+							"objectClass": "Text",
+							"sid": 105022819657233,
+							"parameters": {
+								"unique-id": "14"
+							}
+						}
+					],
+					"actions": [
+						{
+							"id": "set-text",
+							"objectClass": "Text",
+							"sid": 634469636351663,
+							"parameters": {
+								"text": "\"FPS: \" & fps & \" CPU: \" & round(cpuutilisation * 100) & \"% GPU: \" & round(gpuutilisation * 100) & \"%\""
+							}
+						}
+					],
+					"sid": 646302699575615
+				},
+				{
+					"eventType": "group",
+					"disabled": false,
+					"title": "Debug/Camera",
+					"description": "",
+					"isActiveOnStart": true,
+					"children": [
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "pick-by-unique-id",
+									"objectClass": "SliderBar",
+									"sid": 960391185961845,
+									"parameters": {
+										"unique-id": "13"
+									}
+								},
+								{
+									"id": "pick-by-unique-id",
+									"objectClass": "Text",
+									"sid": 729813400076994,
+									"parameters": {
+										"unique-id": "3"
+									}
+								}
+							],
+							"actions": [],
+							"sid": 491873384502695,
+							"children": [
+								{
+									"eventType": "block",
+									"conditions": [
+										{
+											"id": "on-start-of-layout",
+											"objectClass": "System",
+											"sid": 366591892069220
+										}
+									],
+									"actions": [
+										{
+											"type": "script",
+											"script": "runtime.objects.SliderBar.getFirstPickedInstance().value = Main.camera.y;\nruntime.objects.Text.getFirstPickedInstance().text = `Camera Y: ${Math.round(Main.camera.y)}`;"
+										}
+									],
+									"sid": 132865734086046
+								},
+								{
+									"eventType": "block",
+									"conditions": [
+										{
+											"id": "on-changed",
+											"objectClass": "SliderBar",
+											"sid": 316979150841170
+										}
+									],
+									"actions": [
+										{
+											"type": "script",
+											"script": "Main.camera.y = runtime.objects.SliderBar.getFirstPickedInstance().value;\nruntime.objects.Text.getFirstPickedInstance().text = `Camera Y: ${Math.round(Main.camera.y)}`;"
+										}
+									],
+									"sid": 452906939406718
+								}
+							]
+						}
+					],
+					"sid": 617046717915233
+				},
+				{
+					"eventType": "group",
+					"disabled": false,
+					"title": "Debug/Variables",
+					"description": "",
+					"isActiveOnStart": true,
+					"children": [
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "pick-by-unique-id",
+									"objectClass": "SliderBar",
+									"sid": 852921174286727,
+									"parameters": {
+										"unique-id": "5"
+									}
+								},
+								{
+									"id": "pick-by-unique-id",
+									"objectClass": "Text",
+									"sid": 550516300356846,
+									"parameters": {
+										"unique-id": "6"
+									}
+								}
+							],
+							"actions": [],
+							"sid": 857947739667701,
+							"children": [
+								{
+									"eventType": "block",
+									"conditions": [
+										{
+											"id": "on-start-of-layout",
+											"objectClass": "System",
+											"sid": 362212095670580
+										}
+									],
+									"actions": [
+										{
+											"id": "set-value",
+											"objectClass": "SliderBar",
+											"sid": 456895432553514,
+											"parameters": {
+												"value": "ROAD_WIDTH"
+											}
+										},
+										{
+											"id": "set-text",
+											"objectClass": "Text",
+											"sid": 163243944436702,
+											"parameters": {
+												"text": "\"Road Width: \" & ROAD_WIDTH"
+											}
+										}
+									],
+									"sid": 695800548474920
+								},
+								{
+									"eventType": "block",
+									"conditions": [
+										{
+											"id": "on-changed",
+											"objectClass": "SliderBar",
+											"sid": 178480396710657
+										}
+									],
+									"actions": [
+										{
+											"id": "set-eventvar-value",
+											"objectClass": "System",
+											"sid": 271390097468208,
+											"parameters": {
+												"variable": "ROAD_WIDTH",
+												"value": "SliderBar.Value"
+											}
+										},
+										{
+											"id": "set-text",
+											"objectClass": "Text",
+											"sid": 582684715476806,
+											"parameters": {
+												"text": "\"Road Width: \" & ROAD_WIDTH"
+											}
+										}
+									],
+									"sid": 469377882365077
+								}
+							]
+						},
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "pick-by-unique-id",
+									"objectClass": "SliderBar",
+									"sid": 141860279078654,
+									"parameters": {
+										"unique-id": "7"
+									}
+								},
+								{
+									"id": "pick-by-unique-id",
+									"objectClass": "Text",
+									"sid": 109337924671213,
+									"parameters": {
+										"unique-id": "8"
+									}
+								}
+							],
+							"actions": [],
+							"sid": 716907219834484,
+							"children": [
+								{
+									"eventType": "block",
+									"conditions": [
+										{
+											"id": "on-start-of-layout",
+											"objectClass": "System",
+											"sid": 860573116542267
+										}
+									],
+									"actions": [
+										{
+											"id": "set-value",
+											"objectClass": "SliderBar",
+											"sid": 284237594575801,
+											"parameters": {
+												"value": "DRAW_DISTANCE"
+											}
+										},
+										{
+											"id": "set-text",
+											"objectClass": "Text",
+											"sid": 142023301562052,
+											"parameters": {
+												"text": "\"Draw Distance: \" & DRAW_DISTANCE"
+											}
+										}
+									],
+									"sid": 985052277919040
+								},
+								{
+									"eventType": "block",
+									"conditions": [
+										{
+											"id": "on-changed",
+											"objectClass": "SliderBar",
+											"sid": 251266954736907
+										}
+									],
+									"actions": [
+										{
+											"id": "set-eventvar-value",
+											"objectClass": "System",
+											"sid": 716819362823020,
+											"parameters": {
+												"variable": "DRAW_DISTANCE",
+												"value": "SliderBar.Value"
+											}
+										},
+										{
+											"id": "set-text",
+											"objectClass": "Text",
+											"sid": 566105275783890,
+											"parameters": {
+												"text": "\"Draw Distance: \" & DRAW_DISTANCE"
+											}
+										}
+									],
+									"sid": 686157103455093
+								}
+							]
+						},
+						{
+							"eventType": "comment",
+							"text": "Estos valores son usados al comienzo del layout cuando se genera la pista, por lo que debemos recrear la pista si queremos ve los cambios reflejados."
+						},
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "pick-by-unique-id",
+									"objectClass": "SliderBar",
+									"sid": 511356627471370,
+									"parameters": {
+										"unique-id": "9"
+									}
+								},
+								{
+									"id": "pick-by-unique-id",
+									"objectClass": "Text",
+									"sid": 590127949095168,
+									"parameters": {
+										"unique-id": "10"
+									}
+								}
+							],
+							"actions": [],
+							"sid": 717883914222979,
+							"children": [
+								{
+									"eventType": "block",
+									"conditions": [
+										{
+											"id": "on-start-of-layout",
+											"objectClass": "System",
+											"sid": 250191120908679
+										}
+									],
+									"actions": [
+										{
+											"id": "set-value",
+											"objectClass": "SliderBar",
+											"sid": 635653772109623,
+											"parameters": {
+												"value": "SEGMENT_LENGTH"
+											}
+										},
+										{
+											"id": "set-text",
+											"objectClass": "Text",
+											"sid": 607640215470939,
+											"parameters": {
+												"text": "\"Segment Length: \" & SEGMENT_LENGTH"
+											}
+										}
+									],
+									"sid": 600535516712521
+								},
+								{
+									"eventType": "block",
+									"conditions": [
+										{
+											"id": "on-changed",
+											"objectClass": "SliderBar",
+											"sid": 685186108488289
+										}
+									],
+									"actions": [
+										{
+											"id": "set-eventvar-value",
+											"objectClass": "System",
+											"sid": 965964914064602,
+											"parameters": {
+												"variable": "SEGMENT_LENGTH",
+												"value": "SliderBar.Value"
+											}
+										},
+										{
+											"id": "set-text",
+											"objectClass": "Text",
+											"sid": 656224291727740,
+											"parameters": {
+												"text": "\"Segment Length: \" & SEGMENT_LENGTH"
+											}
+										},
+										{
+											"type": "script",
+											"script": "Main.track.length = 0;\nMain.GenerateTrack(runtime, 500);"
+										}
+									],
+									"sid": 994510265629159
+								}
+							]
+						},
+						{
+							"eventType": "block",
+							"conditions": [
+								{
+									"id": "pick-by-unique-id",
+									"objectClass": "SliderBar",
+									"sid": 802462702294804,
+									"parameters": {
+										"unique-id": "11"
+									}
+								},
+								{
+									"id": "pick-by-unique-id",
+									"objectClass": "Text",
+									"sid": 108271651211249,
+									"parameters": {
+										"unique-id": "12"
+									}
+								}
+							],
+							"actions": [],
+							"sid": 935373075270943,
+							"children": [
+								{
+									"eventType": "block",
+									"conditions": [
+										{
+											"id": "on-start-of-layout",
+											"objectClass": "System",
+											"sid": 185142821825252
+										}
+									],
+									"actions": [
+										{
+											"id": "set-value",
+											"objectClass": "SliderBar",
+											"sid": 223059748381620,
+											"parameters": {
+												"value": "RUMBLE_LENGTH"
+											}
+										},
+										{
+											"id": "set-text",
+											"objectClass": "Text",
+											"sid": 788956641010756,
+											"parameters": {
+												"text": "\"Rumble Length: \" & RUMBLE_LENGTH"
+											}
+										}
+									],
+									"sid": 358659766788721
+								},
+								{
+									"eventType": "block",
+									"conditions": [
+										{
+											"id": "on-changed",
+											"objectClass": "SliderBar",
+											"sid": 957232726205674
+										}
+									],
+									"actions": [
+										{
+											"id": "set-eventvar-value",
+											"objectClass": "System",
+											"sid": 918556907071669,
+											"parameters": {
+												"variable": "RUMBLE_LENGTH",
+												"value": "SliderBar.Value"
+											}
+										},
+										{
+											"id": "set-text",
+											"objectClass": "Text",
+											"sid": 198687541656566,
+											"parameters": {
+												"text": "\"Rumble Length: \" & RUMBLE_LENGTH"
+											}
+										},
+										{
+											"type": "script",
+											"script": "Main.track.length = 0;\nMain.GenerateTrack(runtime, 500);"
+										}
+									],
+									"sid": 349282920183572
+								}
+							]
+						}
+					],
+					"sid": 713993857836800
+				}
+			],
+			"sid": 916000759102963
+		}
+	],
+	"sid": 700621361938388
+}

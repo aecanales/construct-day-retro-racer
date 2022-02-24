@@ -1,0 +1,484 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Desarrollo de un juego de carreras retro en Construct 3</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/moon.css">
+		<link rel="stylesheet" href="plugin/drawer/drawer.css" />
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<!-- Título -->
+				<section>
+					<h2>Desarrollo de un juego de carreras retro en Construct 3</h2>
+					<small>Alonso Canales <br><a href="https://twitter.com/Alce_X">@alce_x</a><br>Usa Espacio para avanzar.</small>
+				</section>
+
+				<!-- About me -->
+				<section>
+					<section>
+						<h3>About me</h3>
+						<ul>
+							<li>¡Hola! Soy Alonso.</li>
+							<li>Soy co-fundador de <a href="https://smarto.club">Smarto Club</a>, y recientemente lanzamos nuestro primer juego, <a href="https://store.steampowered.com/app/1444300/Teacup/">Teacup.</a></li>
+							<li>Descubrí Construct en una game jam organizado por el Pablo en la DUOC, y desde entonces soy fanático.</li>
+						</ul>					
+					</section>
+					<section>
+						<p>Entre mis mayores logros de Construct, se encuentra <strong><a href="https://www.construct.net/en/free-online-games/dreams-reality-1142/play">Dreams and Reality.</a></strong></p>
+						<img src="./img/construct_arcade.png">
+					</section>
+				</section>
+
+				<!-- Contexto -->
+				<section>
+					<section>
+						<h3>Contexto</h3>
+					</section>
+					<section>
+						<p>Todo partió de chico con un CD que me regalaron.</p>
+						<img src="./img/sega_smash_pack.jpg">
+					</section>
+					<section>
+						<p>Uno de los juegos que incluia era <strong>Super Hang-On.</strong></p>
+						<img src="./img/super_hang_on.gif">
+					</section>
+					<section>
+						<p>Que en verdad era un reskin de <strong>Out Run.</strong></p>
+						<img src="./img/outrun.gif"> 
+					</section>
+					<section>
+						<p>Un día me propuse como desafio recrearlo en Construct...</p>
+						<span class="fragment">
+							<iframe data-src="./iframe/full_game/" width="640" height="360" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:3px solid #666; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>	
+							<p>Y este fue el resultado.</p>		
+						</span>
+					</section>
+				</section>
+
+				<!-- Disclaimers -->
+				<section>
+					<section>
+						<h3>Disclaimers</h3>
+					</section>
+					<section>
+						<p>1. ¡No soy un genio! Me basé en el trabajo de <a href="https://codeincomplete.com/articles/javascript-racer/">Jake Gordon.</a></p>
+						<small>(Y el se basó en el trabajo de <a href="http://www.extentofthejam.com/pseudo/">Louis Gorenfeld</a>)</small>
+						<img src="./img/jake_gordon.jpg" height="480">
+					</section>
+					<section>
+						<p>2. Por temas de tiempo, veremos solo una parte de la implementación.</p>
+						<small>(¿Pero tal vez eso sea suficiente para que ustedes desarrollen el resto?)</small>
+					</section>
+					<section>
+						<p>3. ¡Esta presentación está online! Pueden encontrarlo en LINK HERE.</p>
+						<small>(¡Gracias <a href="https://revealjs.com/">reveal.js!</a>)</small>
+					</section>
+				</section>
+
+				<!-- Principios de la proyección -->
+				<section>
+					<section>
+						<h3>Creando un mundo pseudo-3D</h3>
+					</section>
+					<section>
+						<ul>
+							<li>Uno podria pensar que vamos a necesitar matemática avanzada.</li>
+							<li>Sin embargo, lo que estamos haciendo es <strong>pseudo-3D</strong>, no 3D de verdad.</li>
+							<li>Solo necesitamos geometria del colegio: <strong>semejanza de triangulos.</strong></li>
+						</ul>
+					</section>
+					<section>
+						<img src="./img/semejanza.jpg">
+					</section>
+					<section>
+						<p>Y bueno... ¿para que nos sirve esto?</p>
+					</section>
+					<section>
+						
+					</section>
+					<section>
+						<p>Formalicemos lo anterior para derivar algunas fórumlas que nos servirán para usarlo de verdad.</p>
+					</section>
+					<section>
+						<p>Debemos poder realizar tres pasos:</p>
+						<ol>
+							<li class="fragment"><strong>Translación:</strong> pasar de coordendas de <strong>mundo</strong> a coordenadas de <strong>cámara</strong></li>
+							<li class="fragment"><strong>Proyección:</strong> pasar de coordendas <strong>cámara</strong> a coordenadas del <strong>plano de proyección</strong></li>
+							<li class="fragment"><strong>Escalamiento:</strong> pasar de coordendas <strong>proyección</strong> a coordenadas de <strong>pantalla</strong></li>
+						</ol>
+					</section>
+					<section>
+						<h4>Translación</h4>
+						<span class="fragment">\[x_{cam} = x - camera_x  \\ y_{cam} = y - camera_y \\ z_{cam} = z - camera_z \]</span> 
+					</section>
+					<section>
+						<h4>Proyección</h4>
+						<img src="./img/projection.png">
+						<span class="fragment">\[x_{proj} = x_{cam} \cdot \frac{d}{z_{cam}} \qquad y_{proj} = y_{cam} \cdot \frac{d}{z_{cam}} \]</span>
+					</section>
+					<section>
+						<h4>Escalamiento</h4>
+						<img src="./img/scaling.png">
+						<span class="fragment">\[x_{screen} = (w/2) + (w/2) \cdot x_{proj} \\ y_{screen} = (h/2) - (h/2) \cdot y_{proj} \]</span>
+					</section>				
+				</section>
+
+				<!-- Pista de Carreras -->
+				<section>
+					<section>
+						<h3>La Pista de Carreras</h3>
+					</section>
+					<section>
+						<p>Sabemos calcular la proyección... ¿pero qué queremos calcular?</p>
+					</section>
+					<section>
+						<p>Si nos fijamos, el "personaje" es un sprite que siempre está en la misma posición...</p>
+						<img src="./img/super_hang_on.gif">
+						<p>...por lo que lo que nos interesa proyectar es la pista.</p>
+					</section>
+					<section>
+						<h4>Descomposición Pista</h4>
+						<img src="./img/road.png">
+					</section>
+					<section>
+						<p>Tenemos listo nuestras fórmulas de proyección y sabemos que queremos proyectar...</p>
+						<p>...así que ¡estamos listos para pasar a Construct!</p>
+					</section>
+				</section>
+
+				<!-- Pasando a Construct -->
+				<section>
+					<section>
+						<h3>Pasando a Construct</h3>
+					</section>
+					<section>
+						<p>Ocuparemos <strong>scripting</strong> para escribir el rendering de pista de carreras.</p>
+						<small>Los ACE son ideales para lógica de juego, pero son menos ideales para algortimos o estructuras de datos complejas.</small>
+					</section>
+					<section>
+						<p>Lo primero a resolver... ¿cómo dibujamos esto a la pantalla?</p>
+						<span class="fragment">
+							<img src="./img/drawing_canvas.png">
+							<p>Podemos usar el Drawing Canvas.</p>
+						</span>
+					</section>
+					<section>
+						<p>Solo hay un problema:</p>
+						<ul>
+							<li>Queremos dibujar en el Canvas desde nuestro scripting...</li>
+							<li>...pero no podemos aceder a las funciones de dibujo de Canvas desde <a href="https://www.construct.net/en/make-games/manuals/construct-3/scripting/scripting-reference/plugin-interfaces/drawing-canvas">la interfaz de scripting.</a></li>
+						</ul>
+					</section>
+					<section>
+						<p>Mi "hack" para este tipo de ocasiones es ocupar las funciones de Construct...</p>
+						<img src="./img/canvas_functions.jpg">
+					</section>
+					<section>
+						<p>...y luego aceder a ellas a través de scripting.</p>
+						<pre data-id="code-animation"><code class="hljs" data-trim data-line-numbers>
+							runtime.callFunction("DrawingCanvas.AddPoint", x, y);
+							runtime.callFunction("DrawingCanvas.FillAndResetPoly", color);
+							runtime.callFunction("DrawingCanvas.Clear");
+						</code></pre>						
+					</section>					
+					<section>
+						<p>Recordemos como habiamos decompuesto la pista.</p>
+						<img src="./img/road.png">
+					</section>
+					<section>
+						<p>Según lo anterior, podemos definir algunas variables globales.</p>
+						<img src="./img/global_vars.jpg">
+					</section>
+					<section>
+						<p>Con estas variables, podemos definir una función para generar la pista:</p>
+						<pre data-id="code-animation"><code class="hljs" data-trim data-line-numbers="1-18|2|3|4-13|14-15">
+							export function GenerateTrack(runtime, length) {
+								for (let n = 0; n < length; n++) {
+									track.push({
+										p1: { 
+											world:     { x: 0, y: 0, z: n * runtime.globalVars.SEGMENT_LENGTH }, 
+											translate: { x: 0, y: 0, z: 0 }, 
+											screen:    { x: 0, y: 0, w: 0 } 
+										},
+										p2: { 
+											world:     { x: 0, y: 0, z: (n+1) * runtime.globalVars.SEGMENT_LENGTH }, 
+											translate: { x: 0, y: 0, z: 0 },
+											screen:    { x: 0, y: 0, w: 0 } 
+										},
+										color: Math.floor(n / runtime.globalVars.RUMBLE_LENGTH) % 2 ? 
+											runtime.globalVars.COLOR_DARK : runtime.globalVars.COLOR_LIGHT
+									});
+								}
+							}						
+						</code></pre>						
+					</section>
+					<section>
+						<p>Recordemos ahora la fórmulas de proyección.</p>
+					</section>
+					<section>
+						<span class="fragment">\[x_{cam} = x - camera_x  \\ y_{cam} = y - camera_y \\ z_{cam} = z - camera_z \]</span> 
+						<span class="fragment">\[x_{proj} = x_{cam} \cdot \frac{d}{z_{cam}} \qquad y_{proj} = y_{cam} \cdot \frac{d}{z_{cam}} \]</span>
+						<span class="fragment">\[x_{screen} = (w/2) + (w/2) \cdot x_{proj} \\ y_{screen} = (h/2) - (h/2) \cdot y_{proj} \]</span>
+					</section>
+					<section>
+						<p>Vamos a hacer un par de simplificaciones para facilitar la lectura del código.</p>
+					</section>
+					<section>
+						<span>\[x_{proj} = x_{cam} \cdot \frac{d}{z_{cam}} \qquad y_{proj} = y_{cam} \cdot \frac{d}{z_{cam}} \]</span>
+						<span class="fragment">\[scale = \frac{d}{z_{cam}} \]</span>
+						<span class="fragment">\[x_{proj} = x_{cam} \cdot scale \qquad y_{proj} = y_{cam} \cdot scale \]</span>
+					</section>
+					<section>
+						<span>\[x_{proj} = x_{cam} \cdot scale \qquad y_{proj} = y_{cam} \cdot scale \]</span>
+						<span>\[x_{screen} = (w/2) + (w/2) \cdot x_{proj} \\ y_{screen} = (h/2) - (h/2) \cdot y_{proj} \]</span>
+						<span class="fragment">\[x_{screen} = (w/2) + (w/2) \cdot  x_{cam} \cdot scale \\ y_{screen} = (h/2) - (h/2) \cdot y_{cam} \cdot scale \]</span>
+					</section>
+					<section>
+						<p>Con lo anterior definimos la siguiente función:</p>
+						<pre data-id="code-animation"><code class="hljs" data-trim data-line-numbers="1-15|2-3|4|6-8|10|12-14">
+							export function ProjectPoint(p, runtime) {
+								const w = runtime.objects.DrawingCanvas.getFirstInstance().surfaceDeviceWidth;
+								const h = runtime.objects.DrawingCanvas.getFirstInstance().surfaceDeviceHeight;
+								const r_w = runtime.globalVars.ROAD_WIDTH;
+							
+								p.translate.x = p.world.x - camera.x;
+								p.translate.y = p.world.y - camera.y;
+								p.translate.z = p.world.z - camera.z;
+								
+								const scale = camera.d / p.translate.z;
+							
+								p.screen.x = Math.round(w / 2 + p.translate.x * w / 2 * scale);
+								p.screen.y = Math.round(h / 2 - p.translate.y * h / 2 * scale);
+								p.screen.w = Math.round(scale * r_w * w / 2);
+							}							
+						</code></pre>	
+					</section>
+					<section>
+						<p>Con lo anterior listo, podemos agregar el código para dibujar la pista.</p>
+						<pre data-id="code-animation"><code class="hljs" data-trim data-line-numbers="1-15|2|4|5|7-8|10">
+							export function RenderTrack(runtime) {
+								runtime.callFunction("DrawingCanvas.Clear");
+
+								for (let n = 0; n < runtime.globalVars.DRAW_DISTANCE; n++) {
+									const segment = track[n % track.length];
+							
+									ProjectPoint(segment.p1, runtime);
+									ProjectPoint(segment.p2, runtime);
+							
+									RenderSegment(segment, runtime);
+								}
+							}
+						</code></pre>
+					</section>
+					<section>
+						<pre data-id="code-animation"><code class="hljs" data-trim data-line-numbers>
+							export function RenderSegment(segment, runtime) {
+								runtime.callFunction("DrawingCanvas.AddPoint", 
+									segment.p1.screen.x - segment.p1.screen.w / 2, segment.p1.screen.y
+								);
+								runtime.callFunction("DrawingCanvas.AddPoint",
+									segment.p2.screen.x - segment.p2.screen.w / 2, segment.p2.screen.y
+								);
+								runtime.callFunction("DrawingCanvas.AddPoint",
+									segment.p2.screen.x + segment.p2.screen.w / 2, segment.p2.screen.y
+								);
+								runtime.callFunction("DrawingCanvas.AddPoint",
+									segment.p1.screen.x + segment.p1.screen.w / 2, segment.p1.screen.y
+								);
+								runtime.callFunction("DrawingCanvas.FillAndResetPoly", segment.color);
+							}
+						</code></pre>
+					</section>
+					<section>
+						<p>¿Y donde lo llamamos?</p>
+						<span class="fragment">
+							<img src="./img/main_loop.jpg">
+							<p>En lo personal, me gusta tenerlo en un event sheet.</p>
+						</span>
+					</section>
+					<section>
+						<p>Y aquí vemos el resultado...</p>
+						<iframe data-src="./iframe/static_example/" width="854" height="480" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:3px solid #666; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>	
+					</section>
+				</section>
+
+				<!-- Implementando al jugador -->
+				<section>
+					<section>
+						<h3>Implementando el jugador</h3>
+					</section>
+					<section>
+						<ul>
+							<li>¡Tenemos una pista de carreras!</li>
+							<li>...pero no podemos movernos.</li>
+							<li>Por suerte, no es difícil, pero tiene una pilleria.</li>
+						</ul>
+					</section>
+					<section>
+						<p>Como comentaba antes, basta con poner un sprite encima de la pista.</p>
+						<img src="./img/car_sprite.jpg">
+					</section>
+					<section>
+						<img src="./img/car_animation.jpg">
+						<p>Y basta con un poco de eventos para animarlo.</p>
+					</section>
+					<section>
+						<p>Para moverse por la pista, definimos unos variables.</p>
+						<img src="./img/movement_variables.jpg">
+					</section>
+					<section>
+						<p>Para genera el efecto de movimiento, movemos la cámara.</p>
+						<img src="./img/car_movement.jpg">
+					</section>
+					<section>
+						<p>¡Y estamos! ¿...o no?</p>
+						<iframe data-src="./iframe/broken_movement/" width="854" height="480" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:3px solid #666; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
+					</section>
+				</section>
+
+				<!-- Arreglando el loop -->
+				<section>
+					<section>
+						<h3>Arreglando el loop</h3>
+						<small>¿Qué acaba de pasar?</small>
+					</section>
+					<section>
+						<p>Hay dos problemas con el código como esta escrito:</p>
+						<ol>
+							<li>No se fija en cuanto se ha movido la cámara a la hora de proyectar segmentos.</li>
+							<li>No se fija en si el segmento está detrás de nosotros a la hora de dibujarlo.</li>
+						</ol>						
+					</section>
+					<section>
+						<p>Podriamos arreglar esto de distintas maneras...</p>
+						<p class="fragment">...pero pensando que queremos hacer una pista que se repite, lo arreglaremos de una manera específica.</p>
+					</section>
+					<section>
+						<p>Hay 3 partes que debemos arreglar para conseguir una pista que se repite:</p>
+						<ol>
+							<li class="fragment">La cámara deberá volver al principio de la pista cuando llegue al final.</li>
+							<li class="fragment">Debemos considerar en que segmento estamos a la hora de partir a proyectar.</li>
+							<li class="fragment">Si es que llegamos al final de la pista, debemos dibujar el principio de la pista como si estuviese a continuación.</li>
+						</ol>
+					</section>
+					<section>
+						<p>1. La cámara deberá volver al principio de la pista cuando llegue al final.</p>
+						<img src="./img/loop_fix.jpg">
+					</section>
+					<section>
+						<p>2. Debemos considerar en que segmento estamos a la hora de partir a proyectar.</p>
+						<pre data-id="code-animation"><code class="hljs" data-trim data-line-numbers="1-14|4|7">
+							export function RenderTrack(runtime) {
+								runtime.callFunction("DrawingCanvas.Clear");
+
+								const base_segment = Math.floor(camera.z / runtime.globalVars.SEGMENT_LENGTH);
+
+								for (let n = 0; n < runtime.globalVars.DRAW_DISTANCE; n++) {
+									const segment = track[(base_segment + n) % track.length];
+							
+									ProjectPoint(segment.p1, runtime);
+									ProjectPoint(segment.p2, runtime);
+							
+									RenderSegment(segment, runtime);
+								}
+							}
+						</code></pre>						
+					</section>
+					<section>
+						<p>3. Si es que llegamos al final de la pista, debemos dibujar el principio de la pista como si estuviese a continuación.</p>
+						<pre data-id="code-animation"><code class="hljs" data-trim data-line-numbers="1-15|8-11">
+							export function RenderTrack(runtime) {
+								runtime.callFunction("DrawingCanvas.Clear");
+
+								const base_segment = Math.floor(camera.z / runtime.globalVars.SEGMENT_LENGTH);
+
+								for (let n = 0; n < runtime.globalVars.DRAW_DISTANCE; n++) {
+									const segment = track[(base_segment + n) % track.length];
+									const has_looped = track.indexOf(segment) < base_segment ? true : false;
+							
+									ProjectPoint(segment.p1, runtime, has_looped);
+									ProjectPoint(segment.p2, runtime, has_looped);
+							
+									RenderSegment(segment, runtime);
+								}
+							}
+						</code></pre>						
+					</section>
+					<section>
+						<pre data-id="code-animation"><code class="hljs" data-trim data-line-numbers="1-19|10-12">
+							export function ProjectPoint(p, runtime, has_looped) {
+								const w = runtime.objects.DrawingCanvas.getFirstInstance().surfaceDeviceWidth;
+								const h = runtime.objects.DrawingCanvas.getFirstInstance().surfaceDeviceHeight;
+								const r_w = runtime.globalVars.ROAD_WIDTH;
+							
+								p.translate.x = p.world.x - camera.x;
+								p.translate.y = p.world.y - camera.y;
+								p.translate.z = p.world.z - camera.z;
+
+								if (has_looped) {
+									p.translate.z += track.length * runtime.globalVars.SEGMENT_LENGTH;
+								}
+								
+								const scale = camera.d / p.translate.z;
+							
+								p.screen.x = Math.round(w / 2 + scale * p.translate.x * w / 2);
+								p.screen.y = Math.round(h / 2 - scale * p.translate.y * h / 2);
+								p.screen.w = Math.round(scale * r_w * w / 2);
+							}							
+						</code></pre>
+					</section>
+					<section>
+						<p>¡Y finalmente estamos!</p>
+						<iframe data-src="./iframe/final_example/" width="854" height="480" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:3px solid #666; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
+					</section>
+				</section>
+				
+				<!-- Ending -->
+				<section>
+					<section>
+						<h3>Para cerrar...</h3>
+					</section>
+					<section>
+						<ul>
+							<li>Si quieren seguir, les recomiendo revisar <a href="https://codeincomplete.com/articles/javascript-racer-v2-curves/">el tutorial de Jake Gordon.</a></li>
+							<li>Puede descargar el proyecto desde este enlace.</li>
+							<li>O pueden ver mi <a href="https://alcex.itch.io/psuedo-3d-racer-in-construct-3">versión original</a> del proyecto, escrito 100% con eventos.</li>
+						</ul>
+					</section>
+					<section>
+						<h3>¡Gracias por su tiempo!</h3>
+					</section>
+				</section>
+
+				<section>
+					<h2>Desarrollo de un juego de carreras retro en Construct 3</h2>
+					<small>Alonso Canales <br><a href="https://twitter.com/Alce_X">@alce_x</a></small>
+				</section>				
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/drawer/drawer.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/math/math.js"></script>
+		<script>
+			Reveal.initialize({
+				hash: true,
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX, RevealDrawer ],
+				drawer: { pathSize: 2 }
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,97 @@
+{
+	"name": "GlobalVariables",
+	"events": [
+		{
+			"eventType": "variable",
+			"name": "DRAW_DISTANCE",
+			"type": "number",
+			"initialValue": "100",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 601372793682133
+		},
+		{
+			"eventType": "variable",
+			"name": "SEGMENT_LENGTH",
+			"type": "number",
+			"initialValue": "2",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 344785101522740
+		},
+		{
+			"eventType": "variable",
+			"name": "RUMBLE_LENGTH",
+			"type": "number",
+			"initialValue": "3",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 132636807478995
+		},
+		{
+			"eventType": "variable",
+			"name": "ROAD_WIDTH",
+			"type": "number",
+			"initialValue": "100",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 110456184466212
+		},
+		{
+			"eventType": "variable",
+			"name": "COLOR_DARK",
+			"type": "number",
+			"initialValue": "0",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 516471181719187
+		},
+		{
+			"eventType": "variable",
+			"name": "COLOR_LIGHT",
+			"type": "number",
+			"initialValue": "0",
+			"comment": "",
+			"isStatic": false,
+			"isConstant": false,
+			"sid": 577649595923490
+		},
+		{
+			"eventType": "block",
+			"conditions": [
+				{
+					"id": "on-start-of-layout",
+					"objectClass": "System",
+					"sid": 152974161969682
+				}
+			],
+			"actions": [
+				{
+					"id": "set-eventvar-value",
+					"objectClass": "System",
+					"sid": 631319041889082,
+					"parameters": {
+						"variable": "COLOR_DARK",
+						"value": "rgbEx(70, 70, 70)"
+					}
+				},
+				{
+					"id": "set-eventvar-value",
+					"objectClass": "System",
+					"sid": 640482625259038,
+					"parameters": {
+						"variable": "COLOR_LIGHT",
+						"value": "rgbEx(60, 60, 60)"
+					}
+				}
+			],
+			"sid": 297137797094539
+		}
+	],
+	"sid": 570590842162507
+}
